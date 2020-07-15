@@ -4,8 +4,22 @@ import psycopg2
 import os
 import sys
 from datetime import date
+import argparse 
 
 try:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("user_id", type=int, help="User ID")
+    parser.add_argument("date", type=date, help="Date") 
+
+    args = parser.parse_args()
+    user_id = arg.user_id
+    dt = args.date
+
+    if user_id is None:
+        raise Exception('User IDが、引数としてセットされていません。')
+    if dt is None:
+        dt = date.today().isoformat()
+   
     twitter_consumer_key = os.environ['TWITTER_CONSUMER_KEY'] 
     twitter_consumer_secret = os.environ['TWITTER_CONSUMER_SECRET'] 
     twitter_access_token_key = os.environ['TWITTER_ACCESS_TOKEN_KEY'] 
@@ -15,14 +29,6 @@ try:
     pg_user = os.environ['PG_WEIGHTER_USER'] 
     pg_host = os.environ['PG_WEIGHTER_HOST'] 
     pg_password = os.environ['PG_WEIGHTER_PASSWORD'] 
-
-    dt = None
-    user_id = sys.argv[1]
-
-    if len(sys.argv) >= 3:
-        dt = sys.argv[2]
-    else:
-        dt = date.today().isoformat()
 
     conn = psycopg2.connect("dbname='{0}' user='{1}' host='{2}' password='{3}'".format(pg_dbname, pg_user, pg_host, pg_password))
     cur = conn.cursor()    
