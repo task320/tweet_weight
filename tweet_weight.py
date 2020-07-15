@@ -2,29 +2,30 @@ import twitter
 from twitter.error import TwitterError
 import psycopg2
 import os
-import sys
 from datetime import date
 import argparse 
 
+def check_date_isoformat(str_date):
+  #todo
+  return True 
+
 try:
     parser = argparse.ArgumentParser()
-    parser.add_argument("user_id", type=int, help="User ID")
-    parser.add_argument("date", type=date, help="Date") 
-
+    parser.add_argument("user_id", type=str, help="User ID")
+    parser.add_argument("date", type=str, help="Date ex: 2020-01-01") 
     args = parser.parse_args()
-    user_id = arg.user_id
+
+    user_id = args.user_id
     dt = args.date
 
-    if user_id is None:
-        raise Exception('User IDが、引数としてセットされていません。')
-    if dt is None:
-        dt = date.today().isoformat()
+    if not check_date_isoformat(dt):
+        raise Exception(dt + " is not isoformat")
    
     twitter_consumer_key = os.environ['TWITTER_CONSUMER_KEY'] 
     twitter_consumer_secret = os.environ['TWITTER_CONSUMER_SECRET'] 
     twitter_access_token_key = os.environ['TWITTER_ACCESS_TOKEN_KEY'] 
     twitter_access_token_secret = os.environ['TWITTER_ACCESS_TOKEN_SECRET'] 
-
+    
     pg_dbname = os.environ['PG_WEIGHTER_DBNAME'] 
     pg_user = os.environ['PG_WEIGHTER_USER'] 
     pg_host = os.environ['PG_WEIGHTER_HOST'] 
@@ -45,7 +46,7 @@ try:
                     access_token_secret=twitter_access_token_secret)
 
     status = api.PostUpdates('{0} :{1}Kg'.format(dt, weight))
-   
+  
 except KeyError as e:
     print('KeyError')
     print(e)
